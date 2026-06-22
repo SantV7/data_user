@@ -1,32 +1,67 @@
 import { useState } from "react";
 
+interface UserDataProps {
+  firstName: string;
+  secondName: string;
+  passwordUser: string | number;
+  birthday: string;
+  country: string;
+}
+
+
+
 const FormularioDeUsuario = () => {
 
-    const [ userData, setUserData ] = useState<null | object>(null)
+    const [ userData, setUserData ] = useState<null | UserDataProps>(null)
 
-    const [ firstName, setFirstName ] = useState<string | null>(null)
-    const [ secondName, setSecondName ] = useState<string | null>(null)
-    const [ passwordUser, setPasswordUser ] = useState<string | number | null>(null)
-    const [ birthday, setBirthday ] = useState<string | null>(null)
-    const [ contryUser, setCountryUser ] = useState<string | null>(null)
+    const [ firstName, setFirstName ] = useState<string>("")
+    const [ secondName, setSecondName ] = useState<string>("")
+    const [ passwordUser, setPasswordUser ] = useState<string | number>("")
+    const [ birthday, setBirthday ] = useState<string>("")
+    const [ countryUser, setCountryUser ] = useState<string>("")
+    const [ showMoreCountry, setShowMoreCountry ] = useState<boolean>(false)
+    const [ customCountry, setCustomCountry ] = useState<string>("")
 
-    const handleSubmit = (event) => {
-        event.preventDefault()
+    
+    const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const selectedValue = e.target.value;
+      setCountryUser(selectedValue);
+      setShowMoreCountry(selectedValue === "Outros");
+    };
 
+    const handleSubmit = (e: any) => {
+        e.preventDefault()
 
+        const finallyCountry = countryUser === "Outros" ? customCountry : countryUser
 
+        const dataUpdatedUser: UserDataProps = {
+          firstName,
+          secondName,
+          passwordUser,
+          birthday,
+          country: finallyCountry
+        }
 
+        setUserData(dataUpdatedUser)
+        
+        console.log(dataUpdatedUser)
 
         setFirstName("")
         setSecondName("")
         setPasswordUser("")
         setBirthday("")
-        setCountryUser("")
-    }
+        setShowMoreCountry(false)
+    };
+    
+  
+
+
+
+
 
 
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <div>
         <label htmlFor="nome">
           <span>Primeiro nome</span>
@@ -37,6 +72,8 @@ const FormularioDeUsuario = () => {
             name="nome" 
             placeholder="Digite seu primeiro nome" 
             maxLength={40}
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
           />
         </label>
       </div>
@@ -51,6 +88,8 @@ const FormularioDeUsuario = () => {
             placeholder="Digite seu sobrenome" 
             required
             maxLength={20}
+            value={secondName}
+            onChange={(e) => setSecondName(e.target.value)}
           />
         </label>
       </div>
@@ -66,6 +105,8 @@ const FormularioDeUsuario = () => {
             minLength={8}
             required
             maxLength={8}
+            value={passwordUser}
+            onChange={(e) => setPasswordUser(e.target.value)}
           />
         </label>
       </div>
@@ -78,6 +119,8 @@ const FormularioDeUsuario = () => {
             type="date" 
             id="aniversario" 
             name="29/08/2007" 
+            value={birthday}
+            onChange={(e) => setBirthday(e.target.value)}
           />
         </label>
       </div>
@@ -85,19 +128,42 @@ const FormularioDeUsuario = () => {
       <div>
         <label htmlFor="pais">
           <span>País</span>
-          <input 
-            required
-            type="text" 
-            id="pais" 
-            name="pais" 
-            placeholder="Brasil/ Japão / Canada" 
-          />
+           <select
+            onChange={handleCountryChange}
+            value={countryUser}
+            name="selectCountry"
+            id="country"
+           >
+            <option value="">Selecione um país</option>
+            <option value="Canada">Canada</option>
+            <option value="Japão">Japão</option>
+            <option value="Brasil">Brasil</option>
+            <option value="Argentina">Argentina</option>
+            <option value="Finlândia">Finlândia</option>
+            <option value="Chile">Chile</option>
+            <option value="Estados Unidos">Estados Unidos</option>
+            <option value="Outras">Outros</option>
+          </select>
         </label>
+
+
+            { showMoreCountry && (
+              <div style={{ marginTop: "8px" }}>
+              <input 
+                type="text" 
+                placeholder="Digite o lugar"
+                required
+                value={customCountry}
+                onChange={(e) => setCustomCountry(e.target.value)}
+              />
+            </div>
+            )}
+
       </div>
 
       <div>
         <button type="submit">Enviar</button>
-        <button>Apagar tudo</button>
+        <button >Apagar tudo</button>
       </div>
     </form>
   );
