@@ -18,7 +18,7 @@ const FormularioDeUsuario = () => {
     const [ userData, setUserData ] = useState<null | UserDataProps>(null)
 
     const [ firstName, setFirstName ] = useState<string>("")
-    const [ secondName, setSecondName ] = useState<string>("")
+    const [ secondName, setSecondName ] = git PushManageruseState<string>("")
     const [ passwordUser, setPasswordUser ] = useState<string | number>("")
     const [ birthday, setBirthday ] = useState<string>("")
     const [ countryUser, setCountryUser ] = useState<string>("")
@@ -35,7 +35,7 @@ const FormularioDeUsuario = () => {
 
     const handleSubmit = (e: any) => {
         e.preventDefault()
-        
+
         
         const finallyCountry = countryUser === "Outros" ? customCountry : countryUser;
 
