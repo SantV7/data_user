@@ -1,30 +1,15 @@
 import { useEffect, useState } from "react"
 
 export const useFetch = (urlDatase: string) => {
-    
-
     const [ dataFetch, setDataFetch ] = useState<null | object>(null)
-    const [ method, setMethod ] = useState<null | string>(null)
-    const [ settings, setSettings ] = useState<null | object>(null)
     const [ isLoading, setIsLoading ] = useState<boolean>(true)
-    console.log(method, setMethod, urlDatase)
+    const [error, setError] = useState<null | string>(null)
 
-    
-    const httpsSettings = () => {
-        if(method === "POST") return;
-        setSettings({
-            method: "POST",
-            headers: {
-                "Content-Type" : "application/json"
-            },
-            body: JSON.stringify(dataFetch)
-        })
-        setIsLoading(false)
-    }
-    
+
 
     useEffect(() => {
-        const fetchData = async () => {
+        // GET Request
+        const fetchGet = async () => {
             try {
                 setIsLoading(true)
 
@@ -35,20 +20,45 @@ export const useFetch = (urlDatase: string) => {
 
                 const response = await request.json()
                 setDataFetch(response)
-            } catch (error) {
-                console.error(`ERROR: ${error}`)
+            } catch (err: any) {
+                console.error(`ERROR: ${err}`)
             } finally {
-                setIsLoading(true)
-                setMethod(null)
-                setSettings(null)
+                setIsLoading(false)
             }
         }
+        fetchGet()
+    }, [urlDatase])
 
-        fetchData()
-    }, [urlDatase, httpsSettings])
+ 
+        const fetchPost = async (bodyData: any) => {
+            try {
+                setIsLoading(true)
+                setError(null)
+
+                const request = await fetch(urlDatase, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(bodyData)
+                })
+
+                if(!request.ok) {
+                    throw new Error(`Erro na requisição: ${request.status}`)
+                }
+
+                const response = await request.json()
+
+                setDataFetch(response)
+            } catch (err: any) {
+                console.error(`ERROR ON POST: ${err}`)
+                setError(err.message)
+            } finally {
+                setIsLoading(false)
+            }
+        }       
 
 
-
-    return { method, settings, httpsSettings, isLoading};
+    return {dataFetch, isLoading, error, fetchPost};
 }
 

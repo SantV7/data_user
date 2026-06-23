@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFetch } from "../../hooks/useFetch";
 
 interface UserDataProps {
@@ -25,7 +25,7 @@ const FormularioDeUsuario = () => {
     const [ showMoreCountry, setShowMoreCountry ] = useState<boolean>(false)
     const [ customCountry, setCustomCountry ] = useState<string>("")
 
-    const {method, settings, httpsSettings, isLoading} = useFetch(urlDatase)
+    const {dataFetch, isLoading, error, fetchPost} = useFetch(urlDatase)
     
     const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       const selectedValue = e.target.value;
@@ -36,7 +36,7 @@ const FormularioDeUsuario = () => {
     const handleSubmit = (e: any) => {
         e.preventDefault()
         
-        const finallyCountry = countryUser === "Outros" ? customCountry : countryUser
+        const finallyCountry = countryUser === "Outros" ? customCountry : countryUser;
 
         const dataUpdatedUser: UserDataProps = {
           firstName,
@@ -46,6 +46,12 @@ const FormularioDeUsuario = () => {
           country: finallyCountry
         }
 
+        useEffect(() => {
+          if(dataFetch) {
+            setUserData(dataFetch)
+          }
+        }, [urlDatase])
+
         setUserData(dataUpdatedUser)
         setFirstName("")
         setSecondName("")
@@ -53,9 +59,6 @@ const FormularioDeUsuario = () => {
         setBirthday("")
         setShowMoreCountry(false)
     };
-    
-  
-
 
 
 
