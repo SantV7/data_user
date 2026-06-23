@@ -33,9 +33,14 @@ const FormularioDeUsuario = () => {
       setShowMoreCountry(selectedValue === "Outros");
     };
 
+    if(dataFetch) {
+      setUserData(dataFetch)
+    }
+    
+    fetchPost(userData)
+
     const handleSubmit = (e: any) => {
         e.preventDefault()
-        
         
         const finallyCountry = countryUser === "Outros" ? customCountry : countryUser;
 
@@ -45,13 +50,7 @@ const FormularioDeUsuario = () => {
           passwordUser,
           birthday,
           country: finallyCountry
-        }
-
-        useEffect(() => {
-          if(dataFetch) {
-            setUserData(dataFetch)
-          }
-        }, [urlDatase])
+        }        
 
         setUserData(dataUpdatedUser)
         setFirstName("")
@@ -60,6 +59,10 @@ const FormularioDeUsuario = () => {
         setBirthday("")
         setShowMoreCountry(false)
     };
+
+
+
+
 
 
 
@@ -164,8 +167,17 @@ const FormularioDeUsuario = () => {
               />
             </div>
             )}
-
       </div>
+
+      {isLoading && (
+        <>
+         <div>
+           <p>Carregando...</p>
+         </div>
+        </>
+      )
+      
+      }
 
       <div>
         <button type="submit">Enviar</button>
