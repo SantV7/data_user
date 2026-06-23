@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { useFetch } from "../../hooks/useFetch";
 
 interface UserDataProps {
-  firstName: string;
-  secondName: string;
-  passwordUser: string | number;
-  birthday: string;
-  country: string;
+  firstName: string ;
+  secondName: string ;
+  passwordUser: string ;
+  birthday: string ;
+  country: string ;
 }
 
 
@@ -28,6 +28,7 @@ const FormularioDeUsuario = () => {
     const [ containerName, setContainerName ] = useState<boolean>(false)
     const [ containerPassword, setContainerPassword ] = useState<boolean>(false)
     const [ containerBirthday, setContainerBirthday ] = useState<boolean>(false);
+    const [ containerCountry, setContainerCountry ] = useState<boolean>(false);
 
     const { dataFetch, isLoading, error, fetchPost } = useFetch(urlDatase)
     
@@ -69,21 +70,27 @@ const FormularioDeUsuario = () => {
           const day = parseInt(dayStr, 10);
           const mounth = parseInt(mounthStr, 10);
           const year = parseInt(yearStr, 10);
+          const thisYear = new Date().getFullYear()
 
-        const thisYear = new Date().getFullYear()
-
-        if(day < 1 || day > 31 || mounth < 1 || mounth > 12 || year < 1920 || year > thisYear) {
-          setContainerBirthday(true)
-          isValid = false
-          setTimeout(() => setContainerBirthday(false), 2360);
+          if(day < 1 || day > 31 || mounth < 1 || mounth > 12 || year < 1920 || year > thisYear) {
+            setContainerBirthday(true)
+            isValid = false
+            setTimeout(() => setContainerBirthday(false), 2360);
+          }
         }
-      }
+
+        const finallyCountry = countryUser === "Outros" ? customCountry : countryUser;
+         if(finallyCountry.trim() === "") {
+           setContainerCountry(true)
+           isValid = false
+           setTimeout(() => setContainerCountry(false), 2360);
+        }
         return isValid;
    }
 
 
 
-    const handleSubmit = async (e: any) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
         if(!validationForm()) {
@@ -102,13 +109,23 @@ const FormularioDeUsuario = () => {
 
         await fetchPost(dataUpdatedUser)
 
-        setUserData(dataUpdatedUser)
         setFirstName("")
         setSecondName("")
         setPasswordUser("")
         setBirthday("")
         setShowMoreCountry(false)
     };
+
+   const handleResetForm = (e: React. MouseEvent<HTMLButtonElement>) => {
+     e.preventDefault(); 
+     setFirstName("");
+     setSecondName("");
+     setPasswordUser("");
+     setBirthday("");
+     setCountryUser("");
+     setCustomCountry("");
+     setShowMoreCountry(false);
+  }; 
 
 
 
@@ -220,7 +237,7 @@ const FormularioDeUsuario = () => {
             <option value="Finlândia">Finlândia</option>
             <option value="Chile">Chile</option>
             <option value="Estados Unidos">Estados Unidos</option>
-            <option value="Outras">Outros</option>
+            <option value="Outros">Outros</option>
           </select>
         </label>
 
@@ -248,7 +265,7 @@ const FormularioDeUsuario = () => {
 
       <div>
         <button className="submit_btn" type="submit">Enviar</button>
-        <button className="delete_btn">Apagar tudo</button>
+        <button onClick={handleResetForm} className="delete_btn">Apagar tudo</button>
       </div>
     </form>
   );
