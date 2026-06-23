@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useFetch } from "../../hooks/useFetch";
 
 interface UserDataProps {
   firstName: string;
@@ -12,6 +13,8 @@ interface UserDataProps {
 
 const FormularioDeUsuario = () => {
 
+  const urlDatase: string  = "http://localhost/aivy/users"
+
     const [ userData, setUserData ] = useState<null | UserDataProps>(null)
 
     const [ firstName, setFirstName ] = useState<string>("")
@@ -22,6 +25,7 @@ const FormularioDeUsuario = () => {
     const [ showMoreCountry, setShowMoreCountry ] = useState<boolean>(false)
     const [ customCountry, setCustomCountry ] = useState<string>("")
 
+    const {method, settings, httpsSettings, isLoading} = useFetch(urlDatase)
     
     const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       const selectedValue = e.target.value;
@@ -31,7 +35,7 @@ const FormularioDeUsuario = () => {
 
     const handleSubmit = (e: any) => {
         e.preventDefault()
-
+        
         const finallyCountry = countryUser === "Outros" ? customCountry : countryUser
 
         const dataUpdatedUser: UserDataProps = {
@@ -43,9 +47,6 @@ const FormularioDeUsuario = () => {
         }
 
         setUserData(dataUpdatedUser)
-        
-        console.log(dataUpdatedUser)
-
         setFirstName("")
         setSecondName("")
         setPasswordUser("")
@@ -132,6 +133,7 @@ const FormularioDeUsuario = () => {
             onChange={handleCountryChange}
             value={countryUser}
             name="selectCountry"
+            required
             id="country"
            >
             <option value="">Selecione um país</option>
