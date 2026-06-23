@@ -5,8 +5,6 @@ export const useFetch = (urlDatase: string) => {
     const [ isLoading, setIsLoading ] = useState<boolean>(true)
     const [error, setError] = useState<null | string>(null)
 
-
-
     useEffect(() => {
         // GET Request
         const fetchGet = async () => {
@@ -31,8 +29,6 @@ export const useFetch = (urlDatase: string) => {
         }
         fetchGet()
     }, [urlDatase])
-    // monitora com base na url
-
  
         const fetchPost = async (bodyData: any) => {
             try {
