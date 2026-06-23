@@ -36,6 +36,7 @@ const FormularioDeUsuario = () => {
     const handleSubmit = (e: any) => {
         e.preventDefault()
         
+        
         const finallyCountry = countryUser === "Outros" ? customCountry : countryUser;
 
         const dataUpdatedUser: UserDataProps = {

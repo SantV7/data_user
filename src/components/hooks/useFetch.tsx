@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 
 export const useFetch = (urlDatase: string) => {
-    const [ dataFetch, setDataFetch ] = useState<null | object>(null)
+    const [ dataFetch, setDataFetch ] = useState<null | any>(null)
     const [ isLoading, setIsLoading ] = useState<boolean>(true)
     const [error, setError] = useState<null | string>(null)
 
@@ -12,8 +12,10 @@ export const useFetch = (urlDatase: string) => {
         const fetchGet = async () => {
             try {
                 setIsLoading(true)
+                setError(null)
 
                 const request = await fetch(urlDatase)
+
                 if(!request.ok) {
                     throw new Error(`Erro na requisição: ${request.status}`)
                 }
@@ -22,12 +24,14 @@ export const useFetch = (urlDatase: string) => {
                 setDataFetch(response)
             } catch (err: any) {
                 console.error(`ERROR: ${err}`)
+                setError(err.message)
             } finally {
                 setIsLoading(false)
             }
         }
         fetchGet()
     }, [urlDatase])
+    // monitora com base na url
 
  
         const fetchPost = async (bodyData: any) => {
