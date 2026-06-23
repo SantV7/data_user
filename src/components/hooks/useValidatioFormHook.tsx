@@ -1,5 +1,4 @@
-// src/hooks/useFormValidation.ts
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
 
 interface ValidationProps {
   firstName: string;
@@ -15,62 +14,74 @@ export const useFormValidation = () => {
   const [containerPassword, setContainerPassword] = useState<boolean>(false);
   const [containerBirthday, setContainerBirthday] = useState<boolean>(false);
   const [containerCountry, setContainerCountry] = useState<boolean>(false);
-  
 
-  const validationForm = ({
+    const timers = useRef<{ [key: string]: ReturnType<typeof setTimeout> }>({});
+
+  const triggerAlert = (setAlert: (val: boolean) => void, key: string, duration = 2360) => {
+    setAlert(true);
+    if (timers.current[key]) clearTimeout(timers.current[key]);
+    timers.current[key] = setTimeout(() => setAlert(false), duration);
+  };
+
+  const validationForm = useCallback(({
     firstName,
     secondName,
     passwordUser,
     birthday,
     countryUser,
     customCountry,
-  }: ValidationProps) => {
+  }: ValidationProps): boolean => {
     let isValid = true;
 
-    if (firstName.trim() === "" || secondName.trim() === "") {
-      isValid = false;
-      setContainerName(true);
+    if (firstName.length > 50 || secondName.length > 50 || passwordUser.length > 100) {
+      return false;
     }
-    setTimeout(() => setContainerName(false), 2360);
 
-    const regexSenha = /^(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
-    if (!regexSenha.test(passwordUser)) {
-      setContainerPassword(true);
+    if (!firstName.trim() || !secondName.trim()) {
+      isValid = false;
+      triggerAlert(setContainerName, "name");
+    }
+
+    const hasUpper = /[A-Z]/.test(passwordUser);
+    const hasLower = /[a-z]/.test(passwordUser);
+    if (passwordUser.length < 8 || !hasUpper || !hasLower) {
+      triggerAlert(setContainerPassword, "password");
       isValid = false;
     }
-    setTimeout(() => setContainerPassword(false), 2360);
-
 
     const regexData = /^\d{2}\/\d{2}\/\d{4}$/;
     if (!regexData.test(birthday)) {
-      setContainerBirthday(true);
+      triggerAlert(setContainerBirthday, "birthday", 3000);
       isValid = false;
-      setTimeout(() => setContainerBirthday(false), 3000);
     } else {
-      const [dayStr, mounthStr, yearStr] = birthday.split("/");
+      const [dayStr, monthStr, yearStr] = birthday.split("/");
       const day = parseInt(dayStr, 10);
-      const mounth = parseInt(mounthStr, 10);
+      const month = parseInt(monthStr, 10) - 1;
       const year = parseInt(yearStr, 10);
       const thisYear = new Date().getFullYear();
 
-      if (day < 1 || day > 31 || mounth < 1 || mounth > 12 || year < 1920 || year > thisYear) {
-        setContainerBirthday(true);
+      const dateCheck = new Date(year, month, day);
+
+      if (
+        year < 1920 || 
+        year > thisYear ||
+        dateCheck.getFullYear() !== year ||
+        dateCheck.getMonth() !== month ||
+        dateCheck.getDate() !== day
+      ) {
+        triggerAlert(setContainerBirthday, "birthday");
         isValid = false;
-        setTimeout(() => setContainerBirthday(false), 2360);
       }
     }
 
-
     const finallyCountry = countryUser === "Outros" ? customCountry : countryUser;
-    if (finallyCountry.trim() === "") {
-      setContainerCountry(true);
+    if (!finallyCountry || finallyCountry.trim() === "") {
+      triggerAlert(setContainerCountry, "country");
       isValid = false;
     }
-    setTimeout(() => setContainerCountry(false), 2360);
 
     return isValid;
-  };
-
+  }, []);
 
   return {
     validationForm,
